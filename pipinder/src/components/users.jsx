@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
-import User from "./user";
 import Pagination from "./pagination";
 import paginate from "../app/utils/paginate";
 import SearchStatus from "./searchStatus";
 import GroupList from "./groupList";
 import API from "../API";
 import PropTypes from "prop-types";
+import UsersTable from "./usersTable";
+import _ from "lodash";
 
 const Users = ({ users, ...rest }) => {
     const pageSize = 4;
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfessions] = useState();
     const [selectedProf, setSelectedProf] = useState();
+    const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     useEffect(() => {
         API.professions.fetchAll().then((data) => setProfessions(data));
     }, []);
@@ -22,8 +24,10 @@ const Users = ({ users, ...rest }) => {
         setCurrentPage(pageIndex);
     };
     const handleProfessionSelect = (item) => {
-        console.log(item);
         setSelectedProf(item);
+    };
+    const handleSort = (item) => {
+        setSortBy(item);
     };
     const clearFilter = () => {
         setSelectedProf();
@@ -39,7 +43,8 @@ const Users = ({ users, ...rest }) => {
     //       )
     //     : users;
     const count = filteredUsers.length;
-    const userCrop = paginate(filteredUsers, currentPage, pageSize);
+    const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
+    const userCrop = paginate(sortedUsers, currentPage, pageSize);
 
     if (users.length) {
         return (
@@ -61,24 +66,14 @@ const Users = ({ users, ...rest }) => {
                 )}
                 <div className="d-flex flex-column flex-shrink-0 p-2">
                     <SearchStatus length={count} />
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>Имя</th>
-                                <th>Качества</th>
-                                <th>Профессия</th>
-                                <th>Количество встреч</th>
-                                <th>Оценка</th>
-                                <th>Избранное</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {userCrop.map((user, index) => (
-                                <User key={index} {...user} {...rest} />
-                            ))}
-                        </tbody>
-                    </table>
+                    {count > 0 && (
+                        <UsersTable
+                            users={userCrop}
+                            onSort={handleSort}
+                            selectedSort={sortBy}
+                            {...rest}
+                        />
+                    )}
                     <div className="d-flex justify-content-center">
                         <Pagination
                             pageSize={pageSize}
@@ -94,7 +89,7 @@ const Users = ({ users, ...rest }) => {
 };
 
 Users.propTypes = {
-    users: PropTypes.array
+    users: PropTypes.array.isRequired
 };
 
 export default Users;
