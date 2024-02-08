@@ -8,12 +8,31 @@ import PropTypes from "prop-types";
 import UsersTable from "./usersTable";
 import _ from "lodash";
 
-const Users = ({ users, ...rest }) => {
+const Users = () => {
     const pageSize = 4;
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfessions] = useState();
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
+
+    const [users, setUsers] = useState();
+    useEffect(() => {
+        API.users.fetchAll().then((data) => setUsers(data));
+    }, []);
+
+    const handleDelete = (id) => {
+        setUsers(users.filter((user) => user._id !== id));
+    };
+    const handleToggleBookmark = (id) => {
+        setUsers(
+            users.map((user) => {
+                if (user._id === id)
+                    return { ...user, bookmark: !user.bookmark };
+                return user;
+            })
+        );
+    };
+
     useEffect(() => {
         API.professions.fetchAll().then((data) => setProfessions(data));
     }, []);
@@ -32,21 +51,26 @@ const Users = ({ users, ...rest }) => {
     const clearFilter = () => {
         setSelectedProf();
     };
-    const filteredUsers = selectedProf
-        ? users.filter((user) => user.profession._id === selectedProf._id)
-        : users;
-    // const filteredUsers = selectedProf
-    //     ? users.filter(
-    //           (user) =>
-    //               JSON.stringify(user.profession) ===
-    //               JSON.stringify(selectedProf)
-    //       )
-    //     : users;
-    const count = filteredUsers.length;
-    const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
-    const userCrop = paginate(sortedUsers, currentPage, pageSize);
+    if (users) {
+        const filteredUsers = selectedProf
+            ? users.filter((user) => user.profession._id === selectedProf._id)
+            : users;
 
-    if (users.length) {
+        // const filteredUsers = selectedProf
+        //     ? users.filter(
+        //           (user) =>
+        //               JSON.stringify(user.profession) ===
+        //               JSON.stringify(selectedProf)
+        //       )
+        //     : users;
+        const count = filteredUsers.length;
+        const sortedUsers = _.orderBy(
+            filteredUsers,
+            [sortBy.path],
+            [sortBy.order]
+        );
+        const userCrop = paginate(sortedUsers, currentPage, pageSize);
+
         return (
             <div className="d-flex">
                 {professions && (
@@ -71,7 +95,8 @@ const Users = ({ users, ...rest }) => {
                             users={userCrop}
                             onSort={handleSort}
                             selectedSort={sortBy}
-                            {...rest}
+                            onDelete={handleDelete}
+                            onToggleBookmark={handleToggleBookmark}
                         />
                     )}
                     <div className="d-flex justify-content-center">
@@ -86,6 +111,7 @@ const Users = ({ users, ...rest }) => {
             </div>
         );
     }
+    return "Loading...";
 };
 
 Users.propTypes = {
