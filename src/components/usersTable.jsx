@@ -5,6 +5,7 @@ import TableBody from "./tableBody";
 import Bookmark from "./bookmark";
 import QualitiesList from "./qualitiesList";
 import Table from "./table";
+import UserLink from "./userLink";
 
 const UsersTable = ({
     users,
@@ -15,7 +16,11 @@ const UsersTable = ({
     ...rest
 }) => {
     const columns = {
-        name: { path: "name", name: "Имя" },
+        name: {
+            path: "name",
+            name: "Имя",
+            component: (user) => <UserLink user={user} />
+        },
         qualities: {
             name: "Качества",
             component: (user) => <QualitiesList qualities={user.qualities} />
