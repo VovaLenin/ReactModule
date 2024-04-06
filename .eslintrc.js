@@ -4,7 +4,7 @@ module.exports = {
         browser: true,
         es2021: true
     },
-    extends: ["standard", "plugin:react/recommended"],
+    extends: ["standard", "prettier", "plugin:prettier/recommended"],
     overrides: [
         {
             env: {
@@ -20,15 +20,17 @@ module.exports = {
         ecmaVersion: "latest",
         sourceType: "module"
     },
-    plugins: ["react"],
+    plugins: ["react", "prettier"],
     rules: {
-        indent: ["error", 4],
-        semi: [2, "always"],
-        "space-before-function-paren": [
+        "prettier/prettier": [
             "error",
-            { anonymous: "always", named: "never" }
-        ],
-        quotes: ["error", "double", { allowTemplateLiterals: true }],
-        curly: ["error", "multi-or-nest"]
+            {
+                semi: true,
+                singleQuote: false,
+                trailingComma: "none",
+                tabWidth: 4
+                // ... все остальные настройки Prettier, если есть
+            }
+        ]
     }
 };

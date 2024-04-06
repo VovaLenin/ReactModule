@@ -1,9 +1,9 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import NavBar from "./components/navBar";
-import Main from "./components/main";
-import Login from "./components/login";
-import Users from "./components/users";
+import Main from "./layouts/main";
+import Login from "./layouts/login";
+import Users from "./layouts/users";
 
 const App = () => {
     return (

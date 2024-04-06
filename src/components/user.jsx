@@ -16,15 +16,6 @@ const User = ({ id }) => {
     if (user) {
         return (
             <>
-                {
-                    // _id: "67rdca3eeb7f6fgeed47181r",
-                    // name: "Брэд Питт",
-                    // profession: professions.actor,
-                    // qualities: [qualities.handsome],
-                    // completedMeetings: 434,
-                    // rate: 5,
-                    // bookmark: false
-                }
                 <h3>{user.name}</h3>
                 <p>{`Профессия: ${user.profession.name}`}</p>
                 <QualitiesList qualities={user.qualities} />
